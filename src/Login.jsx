@@ -1,39 +1,36 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { Link, useNavigate } from "react-router-dom"; // ✅ Updated useHistory -> useNavigate
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "./firebase";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} from "firebase/auth"; // ✅ Updated Firebase imports
+} from "firebase/auth";
 
-function Login() {
-  const navigate = useNavigate(); // ✅ Updated useHistory -> useNavigate
+const Login = () => {
+  const history = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const auth = getAuth(); // ✅ Initialize Firebase auth
-
-  const signIn = (e) => {
+  const signIn = async (e) => {
     e.preventDefault();
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        navigate("/"); // ✅ Updated history.push -> navigate
-      })
-      .catch((error) => alert(error.message));
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      history("/");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
-  const register = (e) => {
+  // Register Function
+  const register = async (e) => {
     e.preventDefault();
-
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        if (userCredential) {
-          navigate("/"); // ✅ Updated history.push -> navigate
-        }
-      })
-      .catch((error) => alert(error.message));
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      history("/");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -42,7 +39,6 @@ function Login() {
         <img
           className="login__logo"
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1024px-Amazon_logo.svg.png"
-          alt="Amazon Logo" // ✅ Added alt attribute
         />
       </Link>
 
@@ -74,8 +70,8 @@ function Login() {
         </form>
 
         <p>
-          By signing in, you agree to the AMAZON FAKE CLONE Conditions of Use &
-          Sale. Please see our Privacy Notice, our Cookies Notice, and our
+          By signing-in you agree to the AMAZON FAKE CLONE Conditions of Use &
+          Sale. Please see our Privacy Notice, our Cookies Notice and our
           Interest-Based Ads Notice.
         </p>
 
@@ -85,6 +81,6 @@ function Login() {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
